@@ -29,18 +29,57 @@
 
 
 #include "Assignment-1.h"
-using namespace std;
+//using namespace std;
+
+#include <iostream>
+#include <vector>
+#include <string>
+#include <sstream>
+#include <set>
+#include <queue>
 
 /// TODO: print each path once this method is called, and
 /// add each path as a string into std::set<std::string> paths
 /// Print the path in the format "START: 1->2->4->5->END", where -> indicate an edge connecting two node IDs
-void GraphTraversal::printPath(std::vector<const Edge *> &path)
-{
+void GraphTraversal::printPath(std::vector<const Edge*> &path) {
+    std::stringstream ss;
     
+    // print first item before for loop start
+    std::vector<const Edge*>::const_iterator e = path.cbegin();
+    ss << "START: " << (*e)->getDst()->getNodeID();
+    ++e;
+
+    for (; e != path.cend(); ++e) {
+        ss << "->" << (*e)->getDst()->getNodeID();
+    }
+
+    ss << "->END";
+
+    const std::string s = ss.str();
+    
+    paths.insert(s);
+
+    std::cout << s << "\n"; 
 };
 
 /// TODO: Implement your depth first search here to traverse each program path (once for any loop) from src to dst
-void GraphTraversal::DFS(const Edge *src_edge, const Node *dst)
-{
+void GraphTraversal::DFS(const Edge* src_edge, const Node* dst) {
+
+    // visit source node
+    const Node* src = src_edge->getSrc();
+    visited.insert(src);
     
+    path.push_back(src_edge);
+
+    const Node* next = src_edge->getDst();
+    if (next->getNodeID() == dst->getNodeID()) {
+        //std::cout << pathToString(path);
+        printPath(path);        
+    }
+
+    for (const Edge* e : next->getOutEdges()) {
+        DFS(e, dst); // recurse
+    }
+
+    path.pop_back();
 }
