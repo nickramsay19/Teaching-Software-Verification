@@ -64,7 +64,6 @@ void GraphTraversal::printPath(std::vector<const Edge*> &path) {
 
 /// TODO: Implement your depth first search here to traverse each program path (once for any loop) from src to dst
 void GraphTraversal::DFS(const Edge* src_edge, const Node* dst) {
-
     // visit source node
     const Node* src = src_edge->getSrc();
     visited.insert(src);
