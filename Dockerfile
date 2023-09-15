@@ -43,3 +43,4 @@ COPY ./Assignment-2/*.cpp ./Assignment-2/
 RUN echo "Building SVF-Teaching example ..."
 RUN cmake -DCMAKE_BUILD_TYPE=Release .
 RUN make
+RUN ./bin/assign-2
