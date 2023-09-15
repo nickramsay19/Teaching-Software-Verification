@@ -26,9 +26,11 @@
  // 
  */
 
-
 #include "Assignment-2.h"
 #include "WPA/Andersen.h"
+
+#undef NDEBUG
+#include <cassert>
 
 using namespace SVF;
 using namespace SVFUtil;
