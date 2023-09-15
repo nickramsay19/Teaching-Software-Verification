@@ -39,6 +39,7 @@ ENV Z3_DIR=${HOME}/SVF/z3.obj
 WORKDIR ${HOME}
 RUN git clone "https://github.com/SVF-tools/Teaching-Software-Verification.git"
 WORKDIR ${HOME}/Teaching-Software-Verification
+COPY ./Assignment-2/*.cpp ./Assignment-2/
 RUN echo "Building SVF-Teaching example ..."
 RUN cmake -DCMAKE_BUILD_TYPE=Release .
 RUN make
