@@ -27,13 +27,33 @@
  */
 
 #include "Assignment-2.h"
+#include <iostream>
+#include <sstream>
+#include <vector>
 
 using namespace SVF;
 using namespace SVFUtil;
 
 /// TODO: Implement your context-sensitive ICFG traversal here to traverse each program path (once for any loop) from src edge to dst node
 void ICFGTraversal::dfs(const ICFGEdge *src, const ICFGNode *dst) {
+    const ICFGNode* dst_node = dst; // renaming here
+
+    // visit source node
+    const ICFGNode* src_node = src->getSrcNode();
+    visited.insert(src_node);
     
+    path.push_back(src);
+
+    const ICFGNode* next_node = src->getDstNode();
+    if (next_node->getID() == dst_node->getID()) {
+        printPath(path);
+    }
+
+    for (const ICFGEdge* e : next_node->getOutEdges()) {
+        dfs(e, dst_node); // recurse
+    }
+
+    path.pop_back(); 
 }
 
 /// TODO: print each path once this method is called, and
@@ -41,7 +61,24 @@ void ICFGTraversal::dfs(const ICFGEdge *src, const ICFGNode *dst) {
 /// Print the path in the format "START: 1->2->4->5->END", where -> indicate an ICFGEdge connects two ICFGNode IDs
 void ICFGTraversal::printICFGPath()
 {
+    std::stringstream ss;
     
+    // print first item before for loop start
+    std::vector<const Edge*>::const_iterator e = path.cbegin();
+    ss << "START: " << (*e)->getDst()->getNodeID();
+    ++e;
+
+    for (; e != path.cend(); ++e) {
+        ss << "->" << (*e)->getDst()->getNodeID();
+    }
+
+    ss << "->END";
+
+    const std::string s = ss.str();
+    
+    paths.insert(s);
+
+    std::cout << s << "\n";  
 }
 
 /// Program entry, do not change
