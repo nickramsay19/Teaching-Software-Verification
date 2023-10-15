@@ -31,7 +31,7 @@
 using namespace z3;
 using namespace SVF;
 using namespace SVFUtil;
-
+#include <iostream>
 /*
  // Software-Verification-Teaching Assignment 3 main function entry
  // Please set the "program": "${workspaceFolder}/bin/assign-3" in file '.vscode/launch.json'
@@ -39,9 +39,11 @@ using namespace SVFUtil;
  // e.g. To run test0, set "args": ["0"] in file'.vscode/launch.json'
  */
 int main(int argc, char **argv) {
+    std::cout << "hfsdfsdf?\n";
     Z3ExampleMgr* z3Mgr = new Z3ExampleMgr(1000);
     int points = 0;
     int n = (argc == 1) ? 0 : atoi(argv[1]);
+    std::cout << "arg was: " << n << '\n';
     bool result;
     switch (n) {
         case 0:
@@ -57,7 +59,9 @@ int main(int argc, char **argv) {
             result = z3Mgr->getEvalExpr(z3Mgr->getZ3Expr("b") == z3Mgr->getZ3Expr(4)).is_true();
             break;
         case 3:
+            std::cout << "3\n";
             z3Mgr->test3(); // mutiple-level pointers
+            std::cout << "result:\n";
             result = z3Mgr->getEvalExpr(z3Mgr->loadValue(z3Mgr->getZ3Expr("q")) == z3Mgr->getZ3Expr(10)).is_true();
             break;
         case 4:

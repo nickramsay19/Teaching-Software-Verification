@@ -1,0 +1,15 @@
+FROM ubuntu:20.04
+
+# download & build SVF
+WORKDIR /root/
+RUN git clone https://github.com/SVF-tools/SVF.git /root/SVF/
+
+# copy project source files
+WORKDIR /root/Assignment-4/
+COPY CMakeLists.txt *.cpp *.h ./
+COPY include/ ./include/
+COPY testcase/ ./testcase/
+
+RUN cmake -B build -S .
+WORKDIR ./build/
+RUN cmake --build .

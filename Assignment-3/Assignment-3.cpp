@@ -92,15 +92,20 @@ void Z3ExampleMgr::test0(){
 void Z3ExampleMgr::test1(){
 
     //  int a;
+    expr a = getZ3Expr("a");    
 
     //  a = 0;
+    addToSolver(a == getZ3Expr(0));
 
     //  int b;
+    expr b = getZ3Expr("b");    
 
-    //  b = a +1;
+    //  b = a + 1;
+    addToSolver(b == a + getZ3Expr(1)); // TODO: confirm this line?
     
     //  assert(b > 0);
-
+    //addToSolver(b > getZ3Expr(0));
+    std::cout << getEvalExpr(b > getZ3Expr(0)) << "\n";
 }
 
 /*
@@ -122,24 +127,36 @@ void Z3ExampleMgr::test1(){
 /// TODO: Implement your translation for each C statement to a Z3 constraint
 void Z3ExampleMgr::test2(){
 
-    //  int* p;
+    // int* p;
+    expr p = getZ3Expr("p");    
 
-    //  int q;
+    // int q;
+    expr q = getZ3Expr("q");    
 
-    //  int b
+    // int b
+    expr b = getZ3Expr("b");    
 
-    //  int a;
-    //  p = &a;
+    // int a;
+    expr a = getZ3Expr("a");    
 
-    //   *p = 0;
+    // p = &a;
+    expr a_addr = getMemObjAddress("a");
+    addToSolver(p == a_addr);
 
-    //   q = *p
+    // *p = 0;
+    storeValue(p, getZ3Expr(0));
 
-    //   *p = 3;
+    // q = *p
+    addToSolver(q == loadValue(p));
 
-    //   b = *p + 1;
+    // *p = 3;
+    storeValue(p, getZ3Expr(3));
 
-    //   assert(b > 3);
+    // b = *p + 1;
+    addToSolver(b == loadValue(p) + getZ3Expr(1));
+
+    // assert(b > 3);
+    std::cout << getEvalExpr(b > getZ3Expr(3)) << "\n";
 }
 
 
@@ -165,29 +182,40 @@ void Z3ExampleMgr::test2(){
 void Z3ExampleMgr::test3(){
 
     //  int** p;
+    expr p = getZ3Expr("p");
 
     //  int* q;
+    expr q = getZ3Expr("q");
 
     //  int* r;
+    expr r = getZ3Expr("r");
 
     //  int x;
+    expr x = getZ3Expr("x");
 
     // p = malloc(..);
+    expr malloc1 = getMemObjAddress("malloc1");
+    addToSolver(p == malloc1);
 
     // q = malloc(..);
+    expr malloc2 = getMemObjAddress("malloc2");
+    addToSolver(q == malloc2);
 
     // *p = q;
+    storeValue(p, q);
 
     // *q = 10;
+    storeValue(q, getZ3Expr(10));
 
     // r = *p;
+    addToSolver(r == loadValue(p));
 
     // x = *r;
+    addToSolver(x == loadValue(r));
 
     // assert(x==10);
+    std::cout << getEvalExpr(x == getZ3Expr(10)) << "\n";
 }
-
-
 /*
    // Array and pointers
 
@@ -211,30 +239,44 @@ void Z3ExampleMgr::test3(){
 void Z3ExampleMgr::test4(){
 
     //  int* p;
+    expr p = getZ3Expr("p");
 
     //  int* x;
+    expr x = getZ3Expr("x");
 
     //  int* y;
+    expr y = getZ3Expr("y");
 
     //  int a;
+    expr a = getZ3Expr("a");
 
     //  int b;
+    expr b = getZ3Expr("b");
 
     //  p = malloc;
+    expr malloc = getMemObjAddress("malloc");
+    addToSolver(p == malloc);    
 
     //  x = &p[0];
+    addToSolver(x == getGepObjAddress(p, 0));
 
     //  y = &p[1];
+    addToSolver(y == getGepObjAddress(p, 1));
 
     //  *x = 10;
+    storeValue(x, getZ3Expr(10));
 
     //  *y = 11;
+    storeValue(y, getZ3Expr(11));
 
     //  a = *x;
+    addToSolver(a == loadValue(x));
 
     // b = *y;
+    addToSolver(b == loadValue(y));
 
     //  assert((a + b)>20);
+    std::cout << getEvalExpr(a + b > getZ3Expr(20)) << "\n";
 }
 
 
@@ -268,38 +310,56 @@ void Z3ExampleMgr::test4(){
 void Z3ExampleMgr::test5(){
 
     // struct A* p;
+    expr p = getZ3Expr("p");
 
     // int a;
+    expr a = getZ3Expr("a");
 
     // int* x;
+    expr x = getZ3Expr("x");
 
     // int* q;
+    expr q = getZ3Expr("q");
 
     // int** r;
+    expr r = getZ3Expr("r");
 
     // int* y;
+    expr y = getZ3Expr("y");
 
     // int z;
+    expr z = getZ3Expr("z");
 
     //  p = malloc;
+    expr malloc1 = getZ3Expr("malloc1");
+    addToSolver(p == malloc1);
 
     //  x = &a;
+    addToSolver(x == getMemObjAddress("a")); // re-using "a" ??
 
     //  *x = 5;
+    storeValue(x, getZ3Expr(5));
 
     //  q = &(p->f0);
+    addToSolver(q == getGepObjAddress(p, 0));
 
     //  *q = 10;
+    storeValue(q, getZ3Expr(10));
 
     //   r = &(p->f1);
+    addToSolver(r == getGepObjAddress(p, 1));
 
     //   *r = x;
+    storeValue(r, x); 
 
     //   y = *r;
+    addToSolver(y == loadValue(r));
 
     //   z = *q + *y
+    addToSolver(z == loadValue(q) + loadValue(y));
 
     //  assert(z==15);
+    std::cout << getEvalExpr(z == getZ3Expr(15)) << "\n";
 }
 
 
@@ -320,20 +380,26 @@ void Z3ExampleMgr::test5(){
 void Z3ExampleMgr::test6(){
 
     // int argv
+    expr argv = getZ3Expr("argv");
 
     //  int a;
+    expr a = getZ3Expr("a");
 
     //  int b;
+    expr b = getZ3Expr("b");
 
     //  a = argv + 1;
+    addToSolver(a == argv + getZ3Expr(1));
 
     //  b = 5;
+    addToSolver(b == getZ3Expr(5));
 
     // if(a > 10)
-
     // b = a;
+    addToSolver(a <= getZ3Expr(10) || b == a);
 
     //  assert(b>=5);
+    std::cout << getEvalExpr(b >= getZ3Expr(5)) << "\n";
 }
 
 /*
@@ -352,18 +418,49 @@ int main() {
 /// TODO: Implement your translation for each C statement to a Z3 constraint
 void Z3ExampleMgr::test7(){
 
+    // ==== MAIN ====
     // int x;
+    expr x = getZ3Expr("x");
 
     // int y;
+    expr y = getZ3Expr("y");
 
-    // int z;
+    // = CALL FOO =
+    solver.push();
+
+    // int z; // To Yulei: Remove this hint
+    expr z = getZ3Expr("z");
 
     // int k;
+    //expr k = getZ3Expr("k");
 
     // y = foo(2);
+    addToSolver(z == getZ3Expr(2));
+    // ==== FOO ====
+    //addToSolver(k == z);
+    expr k = getEvalExpr(z);
+    solver.pop();
+
+    // ==== MAIN ====
+    addToSolver(y == k); 
+
+    // = CALL FOO =
+    solver.push();
 
     // x = foo(3);
+    addToSolver(z == getZ3Expr(3)); 
+    
+    // ==== FOO ====
+    //addToSolver(k == z);
+    k = getEvalExpr(z);
 
+    // = FOO RETURN =
+    solver.pop();
+    // ==== MAIN ====
+    addToSolver(x == k); 
+
+    
     // assert(x== 3 && y== 2); 
+    std::cout << getEvalExpr(x == getZ3Expr(3) && y == getZ3Expr(2)) << "\n";
 
 }

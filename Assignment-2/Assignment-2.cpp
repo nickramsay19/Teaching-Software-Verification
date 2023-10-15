@@ -31,9 +31,23 @@
 #include <sstream>
 #include <vector>
 #include <utility> // for std::pair
+#include <type_traits>
 
 using namespace SVF;
 using namespace SVFUtil;
+
+// check if a set of pairs contains an element, check only first member of pairs for equality
+template <typename T, typename U>
+bool pairSetContainsFirst(const Set<std::pair<T, U>>& set, const T& elem) {
+    for (auto it = set.cbegin(); it != set.cend(); ++it) {
+        const T first = it->first;
+        if (first == elem) {
+            return true;
+        }
+    }
+
+    return false;
+}
 
 /// TODO: Implement your context-sensitive ICFG traversal here to traverse each program path (once for any loop) from src edge to dst node
 void ICFGTraversal::dfs(const ICFGEdge *src, const ICFGNode *dst) {
@@ -51,8 +65,29 @@ void ICFGTraversal::dfs(const ICFGEdge *src, const ICFGNode *dst) {
         printICFGPath();
     }
 
-    for (const ICFGEdge* e : next_node->getOutEdges()) {
-        dfs(e, dst_node); // recurse
+    for (ICFGEdge* e : next_node->getOutEdges()) {
+        //const SVFInstruction* = e->getCallsite();
+
+        //if (!visited.count(e->getDstNode()) {
+        //const ICFGNode* nextNode = e->getDstNode();
+        if (!pairSetContainsFirst(visited, static_cast<const ICFGEdge*>(e))) {
+            
+            if (e->isCallCFGEdge()) {
+                CallCFGEdge* ce = SVFUtil::dyn_cast<CallCFGEdge>(e);
+                //if (ce != nullptr) {
+                callstack.push_back(ce->getCallSite());
+                //}
+            } else if (e->isRetCFGEdge()) {
+                RetCFGEdge* re = SVFUtil::dyn_cast<RetCFGEdge>(e);
+                if (callstack.size() && callstack.back() == re->getCallSite()) {
+                    callstack.pop_back();
+                }
+            } else if (!e->isIntraCFGEdge()) {
+                continue;
+            }
+
+            dfs(e, dst_node); // recurse
+        }
     }
 
     path.pop_back(); 
